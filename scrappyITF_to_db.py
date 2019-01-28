@@ -3,18 +3,14 @@ import time
 import os
 
 from bs4 import BeautifulSoup
-from py2neo import Node,Relationship,PropertyDict,Walkable,Graph,Database,NodeMatcher
+from pymongo import MongoClient
 
 dir = os.getcwd()
 
-
-graph= Graph(password='incorrect')
-matcher = NodeMatcher(graph)
-
+client = MongoClient() #port 27017
 soup = BeautifulSoup(open("{}/itf.html".format(dir)),"html.parser")
 th = soup.find_all('th')
 
-print("HEADINGS")
 
 for i in range (4):
     if th[i].a==True:
@@ -25,7 +21,7 @@ for i in range (4):
 
 
 
-
+collection = db.tourn
 tr = soup.find_all('tr')
 
 
@@ -40,36 +36,42 @@ for i in range(1,251):
     place=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().text,flags=re.M)
     date=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().text,flags=re.M)
     grade=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().find_next_sibling().text,flags=re.M)
+    Tournament = {"name": name,
+                  "place": place,
+                  "date": date,
+                  "grade": grade}
+    posts = db.posts
+    post_id = posts.insert_one(Tournament).inserted_id
+    
+    # DATE=Node("DATE",date="{}".format(date))
+    # GRADE=Node("GRADE",grade="{}".format(grade))
+    # PLACE=Node("PLACE",place="{}".format(place))
 
-    DATE=Node("DATE",date="{}".format(date))
-    GRADE=Node("GRADE",grade="{}".format(grade))
-    PLACE=Node("PLACE",place="{}".format(place))
+    # date_search = list(graph.find("DATE", property_key ='date',property_value = date))
+    # grade_search = list(graph.find("GRADE", property_key ='grade',property_value = grade))
+    # place_search = list(graph.find("PLACE", property_key ='place',property_value = place))
+    # if len(date_search) > 0:
+    #     DATE = matcher.match("DATE",date="{}".format(date))
+    # else:
+    #     graph.create(DATE)
 
-    date_search = list(graph.find("DATE", property_key ='date',property_value = date))
-    grade_search = list(graph.find("GRADE", property_key ='grade',property_value = grade))
-    place_search = list(graph.find("PLACE", property_key ='place',property_value = place))
-    if len(date_search) > 0:
-        DATE = matcher.match("DATE",date="{}".format(date))
-    else:
-        graph.create(DATE)
+    # if len(grade_search) > 0:
+    #     GRADE = matcher.match("GRADE",grade="{}".format(grade))
 
-    if len(grade_search) > 0:
-        GRADE = matcher.match("GRADE",grade="{}".format(grade))
-
-    else:
-        graph.create(GRADE)
+    # else:
+    #     graph.create(GRADE)
 
 
-    if len(place_search) > 0:
-        PLACE = matcher.match("PLACE",place="{}".format(place))
+    # if len(place_search) > 0:
+    #     PLACE = matcher.match("PLACE",place="{}".format(place))
 
-    else:
-        graph.create(PLACE)
+    # else:
+    #     graph.create(PLACE)
 
-    TOURNAMENT = Node("TOURNAMENT",tourna = "{}".format(name))
-    TOURNAMENT_date = Relationship(TOURNAMENT,"is on",DATE)
-    TOURNAMENT_place = Relationship(TOURNAMENT,"is at",PLACE)
-    TOURNAMENT_grade = Relationship(TOURNAMENT,"is of grade",GRADE)
+    # TOURNAMENT = Node("TOURNAMENT",tourna = "{}".format(name))
+    # TOURNAMENT_date = Relationship(TOURNAMENT,"is on",DATE)
+    # TOURNAMENT_place = Relationship(TOURNAMENT,"is at",PLACE)
+    # TOURNAMENT_grade = Relationship(TOURNAMENT,"is of grade",GRADE)
 
 
 
@@ -90,7 +92,13 @@ for i in range(1,95):
     place=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().text,flags=re.M)
     date=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().text,flags=re.M)
     grade=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().find_next_sibling().text,flags=re.M)
+        Tournament = {"name": name,
+                 "place": place,
+                 "date": date,
+                 "grade": grade}
+    posts = db.posts
+    post_id = posts.insert_one(Tournament).inserted_id
+    # Tournament=Node("Tournament",name="{}".format(name),place="{}".format(place),date="{}".format(date),grade="{}".format(grade))
+    # graph.create(Tournament)
 
-    Tournament=Node("Tournament",name="{}".format(name),place="{}".format(place),date="{}".format(date),grade="{}".format(grade))
-    graph.create(Tournament)
-
+    
