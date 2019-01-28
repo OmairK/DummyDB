@@ -7,7 +7,9 @@ from pymongo import MongoClient
 
 dir = os.getcwd()
 
-client = MongoClient() #port 27017
+client = MongoClient('mongodb://localhost:27017') #port 27017
+db = client.torna_database
+print(db)
 soup = BeautifulSoup(open("{}/itf.html".format(dir)),"html.parser")
 th = soup.find_all('th')
 
@@ -20,8 +22,8 @@ for i in range (4):
 
 
 
-
-collection = db.tourn
+db = client.test_database
+collection = db.test_database
 tr = soup.find_all('tr')
 
 
@@ -36,13 +38,14 @@ for i in range(1,251):
     place=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().text,flags=re.M)
     date=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().text,flags=re.M)
     grade=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().find_next_sibling().text,flags=re.M)
-    Tournament = {"name": name,
-                  "place": place,
+    Tournament = {"name": "{}".format(name),
+                  "place": "{}".format(place),
                   "date": date,
-                  "grade": grade}
+                  "grade": "{}".format(grade)}
     posts = db.posts
     post_id = posts.insert_one(Tournament).inserted_id
-    
+
+        
     # DATE=Node("DATE",date="{}".format(date))
     # GRADE=Node("GRADE",grade="{}".format(grade))
     # PLACE=Node("PLACE",place="{}".format(place))
@@ -92,13 +95,15 @@ for i in range(1,95):
     place=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().text,flags=re.M)
     date=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().text,flags=re.M)
     grade=re.sub(r'\n*\n',r'',tr[i].td.find_next_sibling().find_next_sibling().find_next_sibling().text,flags=re.M)
-        Tournament = {"name": name,
-                 "place": place,
-                 "date": date,
-                 "grade": grade}
+    
+    Tournament = {"name": "{}".format(name),
+                  "place": "{}".format(place),
+                  "date": date,
+                  "grade": "{}".format(grade)}
     posts = db.posts
     post_id = posts.insert_one(Tournament).inserted_id
+    
     # Tournament=Node("Tournament",name="{}".format(name),place="{}".format(place),date="{}".format(date),grade="{}".format(grade))
     # graph.create(Tournament)
 
-    
+db.collection_names(include_system_collections=False)
